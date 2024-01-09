@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: test-prometheus
+  namespace: monitoring
+  labels:
+    resource: prometheus
+spec:
+  route:
+    groupBy: ['alertmanager']
+    groupWait: 30s
+    groupInterval: 2m
+    repeatInterval: 5m
+    receiver: 'slack'
+  receivers:
+  - name: 'slack'
+    slackConfigs:
+      - apiURL: "https://hooks.slack.com/services/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"
+        channel: '#devops'

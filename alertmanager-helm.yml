@@ -1,0 +1,78 @@
+# Prometheus 
+namespaceOverride: monitoring
+
+
+# Grafana
+grafana:
+  namespaceOverride: monitoring
+  
+  adminPassword: admin
+
+  service:
+      type: NodePort
+      nodePort: 30001
+
+
+# Kube-state-metrics
+kube-state-metrics:
+  namespaceOverride: monitoring
+
+
+# Node-Exporter
+prometheus-node-exporter:
+  namespaceOverride: monitoring
+
+
+# Alertmanager Config
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: 'https://hooks.slack.com/services/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'
+    inhibit_rules:
+      - source_matchers:
+          - 'severity = critical'
+        target_matchers:
+          - 'severity =~ warning|info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'severity = warning'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+          - 'alertname'
+      - source_matchers:
+          - 'alertname = InfoInhibitor'
+        target_matchers:
+          - 'severity = info'
+        equal:
+          - 'namespace'
+    route:
+      group_by: ['namespace']
+      group_wait: 30s
+      group_interval: 60m
+      repeat_interval: 60m
+      receiver: 'slack'
+      routes:
+      - receiver: 'slack'
+        matchers:
+          - alertname =~ "InfoInhibitor|Watchdog"
+    receivers:
+    - name: 'null'
+    - name: 'slack'
+      slack_configs:
+          - channel: "#devops"
+            send_resolved: true
+    templates:
+    - '/etc/alertmanager/config/*.tmpl'
+
+  alertmanagerSpec:
+    alertmanagerConfigNamespaceSelector:
+      matchLabels:
+        resource: prometheus
+
+
+

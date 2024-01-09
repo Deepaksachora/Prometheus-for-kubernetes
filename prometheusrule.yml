@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    release: prometheus
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+  name: test-rule
+spec:
+  groups:
+    - name: "TEST-RULE"
+      rules:
+        - alert: Deployment at 0 Replicas
+          for: 0m
+          expr: |
+              sum(kube_deployment_status_replicas{pod_template_hash=""}) by (deployment,namespace)  < 1
+          labels: 
+            serverity: warning
+            team: devops
+            env: dev
+          annotations:
+            summary: Deployment {{$labels.deployment}} is currently having no pods running 
+            description: "\nCluster Name: {{$externalLabels.cluster}}\nNamespace: {{$labels.namespace}}\nDeployment name: {{$labels.deployment}}\n"
