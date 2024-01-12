@@ -4,7 +4,7 @@ metadata:
   name: test-prometheus
   namespace: monitoring
   labels:
-    resource: prometheus
+    release: prometheus
 spec:
   route:
     groupBy: ['alertmanager']
@@ -13,7 +13,7 @@ spec:
     repeatInterval: 5m
     receiver: 'slack'
   receivers:
-  - name: 'slack'
+  - name: "slack"
     slackConfigs:
       - apiURL: "https://hooks.slack.com/services/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"
         channel: '#devops'

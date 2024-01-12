@@ -1,6 +1,9 @@
 # Prometheus 
 namespaceOverride: monitoring
-
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30002
 
 # Grafana
 grafana:
@@ -53,8 +56,8 @@ alertmanager:
     route:
       group_by: ['namespace']
       group_wait: 30s
-      group_interval: 60m
-      repeat_interval: 60m
+      group_interval: 5m
+      repeat_interval: 2m
       receiver: 'slack'
       routes:
       - receiver: 'slack'
